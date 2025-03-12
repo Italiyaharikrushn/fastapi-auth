@@ -56,26 +56,4 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     ) -> List[User]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
-    # def get_multi_with_document(
-    #     self, db: Session, skip: int = 0, limit: int = 100,
-    # ) -> List[User]:
-    #     user = db.query(User.id, User.first_name, User.last_name, User.email, User.phone, User.skill, User.addr, User.city, User.state, User.english_proficiency, User.last_education, User.document_id, Document.static_file_path).join(
-    #         User, Document.id == User.document_id).filter(User.status == 1).all()
-
-    #     return user
-
-    # def get_by_id_with_doc(self, db: Session, id: Any) -> Optional[User]:
-    #     return db.query(User.id, User.first_name, User.last_name, User.email, User.phone, User.skill, User.addr, User.city, User.state, User.english_proficiency, User.last_education, User.document_id, Document.static_file_path).join(
-    #         User, Document.id == User.document_id).filter(User.id == id, User.status == 1).first()
-
-    # def get_by_city(self, db: Session, city: str) -> List[User]:
-    #     user = db.query(User.id, User.first_name, User.last_name, User.email, User.phone, User.skill, User.addr, User.city, User.state, User.english_proficiency, User.last_education, User.document_id, Document.static_file_path).join(
-    #         User, Document.id == User.document_id).filter(User.city == city,User.status == 1).all()
-    #     return user
-    
-    # def get_by_skill(self, db: Session, skill: str) -> List[User]:
-    #     user = db.query(User.id, User.first_name, User.last_name, User.email, User.phone, User.skill, User.addr, User.city, User.state, User.english_proficiency, User.last_education, User.document_id, Document.static_file_path).join(
-    #         User, Document.id == User.document_id).filter(User.skill.any(skill),User.status == 1).all()
-    #     return user
-
 user = CRUDUser(User)
