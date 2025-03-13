@@ -19,7 +19,7 @@ class RegisterSchema(BaseModel):
     @classmethod
     def validate_role(cls, value):
         if isinstance(value, str):
-            value = value.upper()  # Ensure input is uppercase
+            value = value.upper()
             if value not in RoleEnum._value2member_map_:
                 raise ValueError(f"Invalid role: {value}. Allowed: {list(RoleEnum._value2member_map_.keys())}")
             return RoleEnum(value)
