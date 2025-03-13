@@ -1,32 +1,29 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, field_validator
 import enum
 
 class RoleEnum(str, enum.Enum):  
-    SELLER = "Seller"
-    ADMIN = "Admin"
-    CUSTOMER = "Customer"
+    SELLER = "SELLER"
+    ADMIN = "ADMIN"
+    CUSTOMER = "CUSTOMER"
 
 class RegisterSchema(BaseModel):
+    email: str
+    password: str
     first_name: str
     last_name: str
-    email: str  
-    password: str  
     phone: str
     gender: str
-    role: RoleEnum = RoleEnum.CUSTOMER  # ✅ Default to "Customer", but can be changed
+    role: RoleEnum
 
-    @validator("role", pre=True, always=True)
+    @field_validator("role", mode="before")
+    @classmethod
     def validate_role(cls, value):
         if isinstance(value, str):
-            value = value.title()  # ✅ Convert "admin" → "Admin"
-            if value in RoleEnum._value2member_map_:
-                return RoleEnum(value)
-            raise ValueError(f"Invalid role: {value}. Allowed: {list(RoleEnum)}")
+            value = value.upper()  # Ensure input is uppercase
+            if value not in RoleEnum._value2member_map_:
+                raise ValueError(f"Invalid role: {value}. Allowed: {list(RoleEnum._value2member_map_.keys())}")
+            return RoleEnum(value)
         return value
-
-    class Config:
-        orm_mode = True  
-        use_enum_values = True  
 
 class LoginSchema(BaseModel):
     email: str

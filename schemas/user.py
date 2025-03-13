@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 
 class UserBase(BaseModel):
     first_name: Optional[str] = None
-    last_name: Optional[str] = None  # ✅ Change int to str
+    last_name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
     status: int = 1

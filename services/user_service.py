@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from jose import jwt
 
-from models.user import User  # ✅ Correct import
+from models.user import User
 from core.security import get_password_hash
 from core.config import settings
 from schemas.auth import RegisterSchema
@@ -11,11 +11,11 @@ from schemas.auth import RegisterSchema
 PREFIX = "Bearer"
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()  # ✅ Fixed: Only returns one user
+    return db.query(User).filter(User.email == email).first()
 
 def create_user(db: Session, register_schema: RegisterSchema):
     password_hash = get_password_hash(register_schema.password)
-    expiry_date = datetime.utcnow() + timedelta(days=90)  # ✅ Fixed: Used "days=90"
+    expiry_date = datetime.utcnow() + timedelta(days=90)
     
     user = User(
         first_name=register_schema.first_name,
@@ -46,7 +46,7 @@ def decode_access_token(token):
         return payload
     except Exception as e:
         print("Problem with token decode =>", str(e))
-        return None  # ✅ Fixed: Return None instead of deleting exception
+        return None
 
 def get_token(header):
     bearer, _, token = header.partition(" ")
