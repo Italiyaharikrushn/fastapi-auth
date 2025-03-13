@@ -1,10 +1,11 @@
 from pydantic import BaseModel, validator, field_validator
 import enum
+from core.enums import RoleEnum
 
-class RoleEnum(str, enum.Enum):  
-    SELLER = "SELLER"
-    ADMIN = "ADMIN"
-    CUSTOMER = "CUSTOMER"
+# class RoleEnum(str, enum.Enum):  
+#     SELLER = "SELLER"
+#     ADMIN = "ADMIN"
+#     CUSTOMER = "CUSTOMER"
 
 class RegisterSchema(BaseModel):
     email: str

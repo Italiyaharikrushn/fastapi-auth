@@ -14,4 +14,4 @@ class User(Base):
     gender = Column(String, nullable=False)
     role = Column(String, nullable=False)
     is_super_admin = Column(Boolean, nullable=False, default=False)
-    expiry_date = Column(DateTime, nullable=True, default=lambda: datetime.utcnow() + timedelta(days=365))  # ✅ Fix: Set default expiry date
+    expiry_date = Column(DateTime, nullable=True, default=lambda: datetime.utcnow() + timedelta(days=365))
