@@ -32,8 +32,8 @@ def fetch_products(
 
 # get singel product
 @router.get("/{product_id}", response_model=ProductResponse)
-def fetch_product(product_id: int, db: Session = Depends(get_db)):
-    product = get_product_by_id(db, product_id)
+def fetch_product(product_id: int, db: Session = Depends(get_db), current_seller: User = Depends(get_current_user)):
+    product = get_product_by_id(db, product_id, current_seller)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
