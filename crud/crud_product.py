@@ -76,10 +76,14 @@ def create_product(db: Session, product_data: ProductCreate) -> Optional[Product
 
 # get all product
 def get_products(db: Session, current_seller: User) -> List[Product]:
-    products = db.query(Product).filter(Product.seller_id == current_seller.id).all()
-    
-    if not products:
-        raise HTTPException(status_code=404, detail="No products found for this seller")
+    if current_seller.role == "seller":
+        products = db.query(Product).filter(Product.seller_id == current_seller.id).all()
+        if not products:
+            raise HTTPException(status_code=404, detail="No products found for this seller")
+    elif current_seller.role in ["customer", "admin"]:
+        products = db.query(Product).all()
+    else:
+        raise HTTPException(status_code=403, detail="Access denied")
     
     return products
 
@@ -89,15 +93,24 @@ def get_product_by_id(db: Session, product_id: int, current_seller: User) -> Opt
         Product.id == product_id, Product.seller_id == current_seller.id
     ).first()
 
+    if current_seller.role == "seller":
+        product = db.query(Product).filter(Product.id == product_id, Product.seller_id == current_seller.id).first()
+
+    elif current_seller.role in ["customer", "admin"]:
+        product = db.query(Product).filter(Product.id == product_id).first()
+    else:
+        raise HTTPException(status_code=403, detail="Access denied")
+
     if not product:
         raise HTTPException(status_code=404, detail="Product not found or access denied")
 
     return product
 
 # update product
-def update_product(db: Session, product_id: int, product_update: ProductUpdate) -> Optional[Product]:
+def update_product(db: Session, product_id: int, product_update: ProductUpdate, current_seller: User) -> Optional[Product]:
     try:
-        product = db.query(Product).filter(Product.id == product_id).first()
+        # product = db.query(Product).filter(Product.id == product_id).first()
+        product = db.query(Product).filter(Product.id == product_id, Product.seller_id == current_seller.id).first()
         if product:
             update_data = product_update.dict(exclude_unset=True)
             for key, value in update_data.items():
@@ -115,9 +128,10 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate) 
         return None
 
 # create product
-def delete_product(db: Session, product_id: int) -> Optional[Product]:
+def delete_product(db: Session, product_id: int, current_seller: User) -> Optional[Product]:
     try:
-        product = db.query(Product).filter(Product.id == product_id).first()
+        # product = db.query(Product).filter(Product.id == product_id).first()
+        product = db.query(Product).filter(Product.id == product_id, Product.seller_id == current_seller.id).first()
         if product:
             db.delete(product)
             db.commit()
@@ -131,34 +145,10 @@ def delete_product(db: Session, product_id: int) -> Optional[Product]:
         db.rollback()
         return None
 
-
-# # get all product
-# def get_products(db: Session, role: str, seller_id: Optional[int]) -> List[Product]:
-#     try:
-#         if role == "seller" and seller_id:
-#             products = db.query(Product).filter(Product.seller_id == seller_id).all()
-#             logger.info(f"Retrieved {len(products)} products for seller ID: {seller_id}")
-#         else:
-#             products = db.query(Product).all()
-#             logger.info(f"Retrieved {len(products)} products for {role}")
-#         return products
-#     except Exception as e:
-#         logger.error(f"Error retrieving products: {e}")
-#         return []
-
-# # get single product
-# def get_product_by_id(db: Session, product_id: int, role: str, seller_id: Optional[int]) -> Optional[Product]:
-#     try:
-#         if role == "seller" and seller_id:
-#             product = db.query(Product).filter(Product.id == product_id, Product.seller_id == seller_id).first()
-#         else:
-#             product = db.query(Product).filter(Product.id == product_id).first()
-
-#         if product:
-#             logger.info(f"Product retrieved: {product.id}")
-#         else:
-#             logger.warning(f"Product not found with ID: {product_id} for role: {role}")
-#         return product
-#     except Exception as e:
-#         logger.error(f"Error retrieving product by ID: {e}")
-#         return None
+crud_product = {
+    "create_product": create_product,
+    "get_products": get_products,
+    "get_product_by_id": get_product_by_id,
+    "update_product": update_product,
+    "delete_product": delete_product,
+}

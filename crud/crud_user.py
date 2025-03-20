@@ -7,6 +7,7 @@ from crud.base import CRUDBase
 from models.user import User
 from db.base_class import Base
 from schemas.user import UserCreate, UserUpdate
+
 ModelType = TypeVar("ModelType", bound=Base)
 
 

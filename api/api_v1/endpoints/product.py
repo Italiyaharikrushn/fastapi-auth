@@ -24,10 +24,7 @@ def add_product(product_data: ProductCreate, db: Session = Depends(get_db)):
 
 # get all product
 @router.get("/", response_model=list[ProductResponse])
-def fetch_products(
-    db: Session = Depends(get_db),
-    current_seller: User = Depends(get_current_user)  # Add current seller dependency
-):
+def fetch_products( db: Session = Depends(get_db), current_seller: User = Depends(get_current_user)):
     return get_products(db, current_seller)
 
 # get singel product
@@ -40,35 +37,16 @@ def fetch_product(product_id: int, db: Session = Depends(get_db), current_seller
 
 # update product
 @router.put("/{product_id}", response_model=ProductResponse)
-def modify_product(product_id: int, product_update: ProductUpdate, db: Session = Depends(get_db)):
-    updated_product = update_product(db, product_id, product_update)
+def modify_product(product_id: int, product_update: ProductUpdate, db: Session = Depends(get_db), current_seller: User = Depends(get_current_user),):
+    updated_product = update_product(db, product_id, product_update, current_seller)
     if not updated_product:
         raise HTTPException(status_code=404, detail="Product not found")
     return updated_product
 
 # delete product
 @router.delete("/{product_id}")
-def remove_product(product_id: int, db: Session = Depends(get_db)):
-    deleted_product = delete_product(db, product_id)
+def remove_product(product_id: int, db: Session = Depends(get_db), current_seller: User = Depends(get_current_user)):
+    deleted_product = delete_product(db, product_id, current_seller)
     if not deleted_product:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted successfully"}
-
-
-# # add product
-# @router.post("/add", response_model=ProductResponse)
-# def add_product(product_data: ProductCreate, db: Session = Depends(get_db)):
-#     return create_product(db, product_data)
-
-# # get all product
-# @router.get("/", response_model=list[ProductResponse])
-# def fetch_products(role: str, seller_id: int, db: Session = Depends(get_db)):
-#     return get_products(db, role, seller_id)
-
-# # get singel product
-# @router.get("/{product_id}", response_model=ProductResponse)
-# def fetch_product(product_id: int, role: str, seller_id: Optional[int] = None, db: Session = Depends(get_db)):
-#     product = get_product_by_id(db, product_id, role, seller_id)
-#     if not product:
-#         raise HTTPException(status_code=404, detail="Product not found or unauthorized access")
-#     return product
