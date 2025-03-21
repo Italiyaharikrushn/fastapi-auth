@@ -18,4 +18,4 @@ class User(Base):
      is_super_admin = Column(Boolean, nullable=False, default=False)
  
      # Seller can have multiple products
-     products = relationship("Product", back_populates="seller")
+     products = relationship("Product", back_populates="seller", cascade="all, delete-orphan")
