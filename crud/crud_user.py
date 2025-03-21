@@ -21,20 +21,15 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(func.lower(User.email) == email).first()
 
-    def get_by_id(self, db: Session, *, id: int) -> Optional[User]:
-        return db.query(User).filter(User.id == id).first()
-
-    def create(self, db: Session, *, obj_in: UserCreate, created_by=None) -> User:
-        obj_in_data = jsonable_encoder(obj_in)
-        obj_in_data["created_by"] = created_by
-        db_obj = self.model(**obj_in_data)  # type: ignore
-
-        # db_obj.last_login_date = datetime.strptime(
-        #     db_obj.last_login_date, "%Y-%m-%dT%H:%M:%S.%f")
-        db.add(db_obj)
+    def get_by_id(self, db: Session, user_id: int):
+        return db.query(User).filter(User.id == user_id).first()
+    
+    def create(self, db: Session, user: UserCreate):
+        db_user = User(**user.dict())
+        db.add(db_user)
         db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        db.refresh(db_user)
+        return db_user
 
     def update(
         self, db: Session, *, db_obj: User, obj_in: Union[User, Dict[str, Any]], modified_by=None
