@@ -3,17 +3,6 @@ from models.product import Product
 from schemas.product import ProductCreate, ProductUpdate
 
 class CRUDProduct:
-    def get_all_products(self, db: Session, user: dict):
-        if user.role == "seller":
-            return db.query(Product).filter(Product.seller_id == user.id).all()  # ✅ Fix here
-        return db.query(Product).all()
-
-    def get_product_by_id(self, db: Session, product_id: int, user: dict):
-        product = db.query(Product).filter(Product.id == product_id).first()
-        if not product or (user.role == "seller" and product.seller_id != user.id):  # ✅ Fix here
-            return None
-        return product
-
     def create(self, db: Session, product: ProductCreate, user):
         if user.role != "seller":
             return None
@@ -38,6 +27,17 @@ class CRUDProduct:
             setattr(product, key, value)
         db.commit()
         db.refresh(product)
+        return product
+
+    def get_all_products(self, db: Session, user: dict):
+        if user.role == "seller":
+            return db.query(Product).filter(Product.seller_id == user.id).all()  # ✅ Fix here
+        return db.query(Product).all()
+
+    def get_product_by_id(self, db: Session, product_id: int, user: dict):
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product or (user.role == "seller" and product.seller_id != user.id):  # ✅ Fix here
+            return None
         return product
 
     def delete_product(self, db: Session, product_id: int, user: dict):
