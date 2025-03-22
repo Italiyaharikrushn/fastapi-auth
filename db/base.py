@@ -9,4 +9,3 @@ from models.cart import Cart
 from models.cart_itrm import CartItem
 from models.order import Order, OrderStatusEnum
 from models.order_item import OrderItem, OrderStatusEnum
-from models.shipping_address import ShippingAddress

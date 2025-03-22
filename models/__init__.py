@@ -2,7 +2,6 @@ from .user import User
 from .product import Product
 from .document import Document
 from .address import BillingAddress
-from .shipping_address import ShippingAddress
 from .cart import Cart
 from .cart_itrm import CartItem
 from .order import Order

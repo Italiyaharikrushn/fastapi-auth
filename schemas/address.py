@@ -1,35 +1,28 @@
 from pydantic import BaseModel
+from typing import Optional
 
-# **Shipping Address Schemas**
-class ShippingAddressCreate(BaseModel):
-    street: str
-    city: str
-    state: str
-    postal_code: str
-    country: str
-
-class ShippingAddressUpdate(ShippingAddressCreate):
-    pass
-
-class ShippingAddressResponse(ShippingAddressCreate):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-# **Billing Address Schemas**
+# ✅ Billing Address Schema
 class BillingAddressCreate(BaseModel):
-    street: str
-    city: str
-    state: str
-    postal_code: str
-    country: str
+    billing_fullname: str
+    billing_address: str
+    billing_city: str
+    billing_state: Optional[str] = None
+    billing_pincode: str
+    billing_country: str
+    billing_contact_number: str
 
-class BillingAddressUpdate(BillingAddressCreate):
-    pass
+class BillingAddressUpdate(BaseModel):
+    billing_fullname: Optional[str] = None
+    billing_address: Optional[str] = None
+    billing_city: Optional[str] = None
+    billing_state: Optional[str] = None
+    billing_pincode: Optional[str] = None
+    billing_country: Optional[str] = None
+    billing_contact_number: Optional[str] = None
 
 class BillingAddressResponse(BillingAddressCreate):
     id: int
+    user_id: int
 
     class Config:
         orm_mode = True

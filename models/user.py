@@ -19,3 +19,6 @@ class User(Base):
  
      # Seller can have multiple products
      products = relationship("Product", back_populates="seller", cascade="all, delete-orphan")
+     billing_address = relationship("BillingAddress", back_populates="user")
+     carts = relationship("Cart", back_populates="user", cascade="all, delete-orphan")
+     orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")

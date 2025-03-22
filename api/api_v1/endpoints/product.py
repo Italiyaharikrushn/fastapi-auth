@@ -5,7 +5,7 @@ from crud import crud_product
 from db.session import get_db
 from api.dependencies import get_current_user # Middleware for authentication
 
-router = APIRouter(prefix="/products", tags=["Products"])
+router = APIRouter()
 
 @router.post("/", response_model=ProductResponse)
 def create_product(

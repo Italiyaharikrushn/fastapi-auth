@@ -8,7 +8,8 @@ class CartItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     cart_id = Column(Integer, ForeignKey("carts.id", ondelete="CASCADE"), nullable=False)
-    product_id = Column(Integer, ForeignKey("product.id", ondelete="CASCADE"), nullable=False)
+    product_id = Column(Integer, ForeignKey("product.id", ondelete="CASCADE"), nullable=False)  # Ensure correct FK
+
     quantity = Column(Integer, nullable=False, default=1)
     date_added = Column(DateTime, default=datetime.utcnow)
 

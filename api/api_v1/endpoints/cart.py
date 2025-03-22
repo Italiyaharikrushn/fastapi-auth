@@ -5,7 +5,7 @@ from schemas.cart import CartItemCreate, CartResponse
 from crud.crud_cart import crud_cart
 from api.dependencies import get_current_user
 
-router = APIRouter(prefix="/cart", tags=["Cart"])
+router = APIRouter()
 
 @router.post("/", response_model=CartResponse)
 def add_to_cart(cart_item: CartItemCreate, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):

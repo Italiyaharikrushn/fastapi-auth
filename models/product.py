@@ -15,3 +15,5 @@ class Product(Base):
 
     seller = relationship("User", back_populates="products")
     documents = relationship("Document", back_populates="product")
+    cart_items = relationship("CartItem", back_populates="product", cascade="all, delete-orphan")
+    order_items = relationship("OrderItem", back_populates="product", cascade="all, delete-orphan")

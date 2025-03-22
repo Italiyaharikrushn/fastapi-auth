@@ -11,6 +11,7 @@ class Cart(Base):
     # Relationships
     user = relationship("User", back_populates="carts")
     cart_items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
+    # product = relationship("Product", back_populates="cart_items")
 
     def total_items(self):
         return sum(item.quantity for item in self.cart_items)
