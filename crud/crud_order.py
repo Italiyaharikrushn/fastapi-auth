@@ -82,7 +82,7 @@ class CRUDOrder:
         if not order_items:
             raise HTTPException(status_code=404, detail="No orders found for this seller")
 
-        order_ids = {item.order_id for item in order_items}  # Get unique order IDs
+        order_ids = {item.order_id for item in order_items}
 
         orders = db.query(Order).filter(Order.id.in_(order_ids)).all()
 

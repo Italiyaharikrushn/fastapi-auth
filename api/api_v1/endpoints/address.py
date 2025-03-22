@@ -11,12 +11,11 @@ from api.dependencies import get_current_user
 
 router = APIRouter()
 
-# **Billing Address Routes**
 @router.post("/billing/", response_model=BillingAddressResponse)
 def add_billing_address(
     address_data: BillingAddressCreate,
     db: Session = Depends(get_db),
-    user: dict = Depends(get_current_user)  # Ensure user authentication
+    user: dict = Depends(get_current_user)
 ):
     return create_billing_address(db, user.id, address_data)
 

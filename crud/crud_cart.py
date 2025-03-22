@@ -5,7 +5,6 @@ from fastapi import HTTPException
 
 class CRUDCart:
     def add_to_cart(self, db: Session, user_id: int, cart_item: CartItemCreate):
-        # Check if cart exists for user
         cart = db.query(Cart).filter(Cart.user_id == user_id).first()
         if not cart:
             cart = Cart(user_id=user_id)
@@ -13,7 +12,6 @@ class CRUDCart:
             db.commit()
             db.refresh(cart)
         
-        # Add item to cart
         cart_item_obj = CartItem(cart_id=cart.id, product_id=cart_item.product_id, quantity=cart_item.quantity)
         db.add(cart_item_obj)
         db.commit()
@@ -54,5 +52,4 @@ class CRUDCart:
         db.commit()
         return {"message": "Cart cleared successfully"}
 
-# ✅ Ensure this line exists
 crud_cart = CRUDCart()

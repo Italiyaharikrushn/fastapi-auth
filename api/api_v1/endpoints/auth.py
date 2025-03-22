@@ -9,7 +9,6 @@ from core.config import settings
 
 router = APIRouter()
 
-
 @router.post(
     "/register",
     response_model=RegisterSchema,
@@ -31,9 +30,6 @@ def register(register_schema: RegisterSchema, db: Session = Depends(get_db)):
 
 @router.post("/login", status_code=(status.HTTP_201_CREATED))
 def login(login_schema: LoginSchema, db: Session = Depends(get_db)):
-    """
-    Pass username and password it will return the jwt token
-    """
     existing_users = get_user_by_email(db, login_schema.email)
     if len(existing_users) == 0:
         raise HTTPException(

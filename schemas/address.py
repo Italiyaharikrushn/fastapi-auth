@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# ✅ Billing Address Schema
 class BillingAddressCreate(BaseModel):
     billing_fullname: str
     billing_address: str

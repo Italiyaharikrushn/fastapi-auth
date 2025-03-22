@@ -12,7 +12,7 @@ class CRUDProduct:
             price=product.price,
             stock=product.stock,
             image=product.image,
-            seller_id=user.id  # ✅ Fix here
+            seller_id=user.id
         )
         db.add(db_product)
         db.commit()
@@ -21,7 +21,7 @@ class CRUDProduct:
 
     def update_product(self, db: Session, product_id: int, updated_data: dict, user: dict):
         product = db.query(Product).filter(Product.id == product_id).first()
-        if not product or (user.role == "seller" and product.seller_id != user.id):  # ✅ Fix here
+        if not product or (user.role == "seller" and product.seller_id != user.id):
             return None
         for key, value in updated_data.items():
             setattr(product, key, value)
@@ -31,18 +31,18 @@ class CRUDProduct:
 
     def get_all_products(self, db: Session, user: dict):
         if user.role == "seller":
-            return db.query(Product).filter(Product.seller_id == user.id).all()  # ✅ Fix here
+            return db.query(Product).filter(Product.seller_id == user.id).all()
         return db.query(Product).all()
 
     def get_product_by_id(self, db: Session, product_id: int, user: dict):
         product = db.query(Product).filter(Product.id == product_id).first()
-        if not product or (user.role == "seller" and product.seller_id != user.id):  # ✅ Fix here
+        if not product or (user.role == "seller" and product.seller_id != user.id):
             return None
         return product
 
     def delete_product(self, db: Session, product_id: int, user: dict):
         product = db.query(Product).filter(Product.id == product_id).first()
-        if not product or (user.role == "seller" and product.seller_id != user.id):  # ✅ Fix here
+        if not product or (user.role == "seller" and product.seller_id != user.id):
             return None
         db.delete(product)
         db.commit()
