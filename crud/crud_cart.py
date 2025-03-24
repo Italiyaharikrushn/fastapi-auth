@@ -4,18 +4,6 @@ from schemas.cart import CartItemCreate, CartItemUpdate
 from fastapi import HTTPException
 
 class CRUDCart:
-    def get_cart(self, db: Session, user_id: int):
-        cart = db.query(Cart).filter(Cart.user_id == user_id).first()
-        if not cart:
-            return {"message": "Cart is empty", "cart_items": []}
-        
-        cart_items = db.query(CartItem).filter(CartItem.cart_id == cart.id).all()
-        total_price = sum(
-            db.query(Product).filter(Product.id == item.product_id).first().price * item.quantity
-            for item in cart_items
-        )
-        return {"cart_id": cart.id, "user_id": user_id, "total_price": total_price, "cart_items": cart_items}
-
     def add_to_cart(self, db: Session, user_id: int, cart_item: CartItemCreate):
         cart = db.query(Cart).filter(Cart.user_id == user_id).first()
         if not cart:
@@ -42,6 +30,18 @@ class CRUDCart:
         db.commit()
         db.refresh(cart_item)
         return cart_item
+
+    def get_cart(self, db: Session, user_id: int):
+            cart = db.query(Cart).filter(Cart.user_id == user_id).first()
+            if not cart:
+                return {"message": "Cart is empty", "cart_items": []}
+            
+            cart_items = db.query(CartItem).filter(CartItem.cart_id == cart.id).all()
+            total_price = sum(
+                db.query(Product).filter(Product.id == item.product_id).first().price * item.quantity
+                for item in cart_items
+            )
+            return {"cart_id": cart.id, "user_id": user_id, "total_price": total_price, "cart_items": cart_items}
 
     def remove_from_cart(self, db: Session, user_id: int, cart_item_id: int):
         cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart_id == Cart.id, Cart.user_id == user_id).first()

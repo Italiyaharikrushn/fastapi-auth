@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from models.order import Order, OrderStatusEnum
 from models import OrderItem, Product, BillingAddress, Cart, CartItem
 from fastapi import HTTPException
-from schemas.order import OrderCreate, OrderUpdate
 
 class CRUDOrder:
     def checkout(self, db: Session, user_id: int, billing_address_id: int):

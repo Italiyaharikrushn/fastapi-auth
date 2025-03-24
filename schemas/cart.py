@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-# CartItem Schema for creating and updating items in the cart
 class CartItemCreate(BaseModel):
     product_id: int
     quantity: int
@@ -15,7 +14,6 @@ class CartItemUpdate(BaseModel):
     class Config:
         orm_mode = True
 
-# Schema for Cart Item details returned
 class CartItemDetails(BaseModel):
     id: int
     product_id: int
@@ -26,7 +24,6 @@ class CartItemDetails(BaseModel):
     class Config:
         orm_mode = True
 
-# Schema for Cart data
 class Cart(BaseModel):
     id: int
     user_id: int
@@ -46,7 +43,7 @@ class CartResponse(BaseModel):
     id: int
     user_id: int
     total_price: float
-    items: List[CartItemResponse]  # Assuming CartItemResponse is defined
+    items: List[CartItemResponse]
 
     class Config:
         orm_mode = True
