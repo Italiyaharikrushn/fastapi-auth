@@ -62,4 +62,25 @@ class CRUDOrder:
             "order_items": order_items
         }
 
+    def accept_order(self, db: Session, order_id: int):
+        # Step 1: Retrieve the order
+        order = db.query(Order).filter(Order.id == order_id).first()
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        # Step 2: Ensure the order is in 'pending' status
+        if order.status != OrderStatusEnum.pending:
+            raise HTTPException(status_code=400, detail="Order cannot be accepted because it is not in pending status")
+
+        # Step 3: Update the order status to 'accepted'
+        order.status = OrderStatusEnum.ready_to_ship
+        db.commit()  # Commit the changes to the database
+        db.refresh(order)  # Refresh the order object to get the updated status
+        
+        return {
+            "message": "Order accepted and marked as ready to ship",
+            "order_id": order.id,
+            "status": order.status
+        }
+
 crud_order = CRUDOrder()

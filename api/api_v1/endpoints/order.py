@@ -14,3 +14,7 @@ def checkout(order_data: OrderCreate, db: Session = Depends(get_db), user: dict 
 @router.get("/{order_id}")
 def get_order(order_id: int, db: Session = Depends(get_db)):
     return crud_order.get_order_by_id(db, order_id)
+
+@router.put("/orders/{order_id}/accept")
+async def accept_order(order_id: int, db: Session = Depends(get_db)):
+    return crud_order.accept_order(db=db, order_id=order_id)
