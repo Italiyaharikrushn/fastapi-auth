@@ -1,7 +1,8 @@
 from pydantic import BaseModel
-from enum import Enum
 from typing import List, Optional
+from enum import Enum
 
+# Enum for order status
 class OrderStatusEnum(str, Enum):
     pending = "pending"
     ready_to_ship = "ready_to_ship"
@@ -11,32 +12,23 @@ class OrderStatusEnum(str, Enum):
     cancelled = "cancelled"
     return_order = "return"
 
-class OrderItemCreate(BaseModel):
-    product_id: int
-    quantity: int
-
+# Schema for creating an order
 class OrderCreate(BaseModel):
     billing_address_id: int
-    items: List[OrderItemCreate]
+    items: List[int]  # You can replace this with the actual order item schema
 
+# Schema for updating an order
 class OrderUpdate(BaseModel):
-    status: OrderStatusEnum
+    status: Optional[OrderStatusEnum] = None
+    billing_address_id: Optional[int] = None
 
-class OrderItemResponse(BaseModel):
-    id: int
-    product_id: int
-    quantity: int
-    status: OrderStatusEnum
-
-    class Config:
-        orm_mode = True
-
+# Schema for order response
 class OrderResponse(BaseModel):
     id: int
     user_id: int
     status: OrderStatusEnum
     total_price: float
-    order_items: List[OrderItemResponse]
+    order_items: List[int]  # You can replace this with the actual order item response
 
     class Config:
         orm_mode = True

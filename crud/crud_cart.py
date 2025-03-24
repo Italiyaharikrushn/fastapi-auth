@@ -4,6 +4,18 @@ from schemas.cart import CartItemCreate, CartItemUpdate
 from fastapi import HTTPException
 
 class CRUDCart:
+    def get_cart(self, db: Session, user_id: int):
+        cart = db.query(Cart).filter(Cart.user_id == user_id).first()
+        if not cart:
+            return {"message": "Cart is empty", "cart_items": []}
+        
+        cart_items = db.query(CartItem).filter(CartItem.cart_id == cart.id).all()
+        total_price = sum(
+            db.query(Product).filter(Product.id == item.product_id).first().price * item.quantity
+            for item in cart_items
+        )
+        return {"cart_id": cart.id, "user_id": user_id, "total_price": total_price, "cart_items": cart_items}
+
     def add_to_cart(self, db: Session, user_id: int, cart_item: CartItemCreate):
         cart = db.query(Cart).filter(Cart.user_id == user_id).first()
         if not cart:
@@ -16,17 +28,16 @@ class CRUDCart:
         db.add(cart_item_obj)
         db.commit()
         db.refresh(cart_item_obj)
-        return cart
+        return self.get_cart(db, user_id)
 
     def update_cart_item(self, db: Session, user_id: int, cart_item_id: int, update_data: CartItemUpdate):
         cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart_id == Cart.id, Cart.user_id == user_id).first()
-        
         if not cart_item:
             raise HTTPException(status_code=404, detail="Cart item not found")
 
         if update_data.quantity <= 0:
             raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
-        
+
         cart_item.quantity = update_data.quantity
         db.commit()
         db.refresh(cart_item)
@@ -36,7 +47,7 @@ class CRUDCart:
         cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart_id == Cart.id, Cart.user_id == user_id).first()
         if not cart_item:
             raise HTTPException(status_code=404, detail="Cart item not found")
-        
+
         db.delete(cart_item)
         db.commit()
         return {"message": "Cart item removed successfully"}
