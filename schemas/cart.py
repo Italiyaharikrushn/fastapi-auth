@@ -5,14 +5,8 @@ class CartItemCreate(BaseModel):
     product_id: int
     quantity: int
 
-    class Config:
-        orm_mode = True
-
 class CartItemUpdate(BaseModel):
     quantity: int
-
-    class Config:
-        orm_mode = True
 
 class CartItemDetails(BaseModel):
     id: int
@@ -21,17 +15,11 @@ class CartItemDetails(BaseModel):
     product_name: str
     product_price: float
 
-    class Config:
-        orm_mode = True
-
 class Cart(BaseModel):
     id: int
     user_id: int
     total_price: float
     cart_items: List[CartItemDetails] = []
-
-    class Config:
-        orm_mode = True
 
 class CartItemResponse(BaseModel):
     id: int
@@ -44,6 +32,3 @@ class CartResponse(BaseModel):
     user_id: int
     total_price: float
     items: List[CartItemResponse]
-
-    class Config:
-        orm_mode = True

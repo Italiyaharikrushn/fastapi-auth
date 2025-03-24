@@ -23,6 +23,3 @@ class OrderItem(Base):
     order_date = Column(Date, default=date.today)
     dispatch_date = Column(Date, nullable=True)
     delivery_date = Column(Date, nullable=True)
-
-    def total_price(self):
-        return self.quantity * self.product.price

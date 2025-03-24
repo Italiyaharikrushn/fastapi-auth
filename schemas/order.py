@@ -26,5 +26,3 @@ class OrderResponse(BaseModel):
     total_price: float
     order_items: List[int]
 
-    class Config:
-        orm_mode = True

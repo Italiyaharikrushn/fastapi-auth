@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, ForeignKey
 from db.base_class import Base
 
 class Cart(Base):

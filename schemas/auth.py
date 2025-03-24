@@ -10,5 +10,3 @@ class RegisterSchema(LoginSchema):
     phone: str
     gender: str
     role:str
-    class Config:
-        orm_mode = True

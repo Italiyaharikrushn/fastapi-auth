@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Numeric
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, ForeignKey, Enum, DateTime, Numeric
 from datetime import datetime
 from db.base_class import Base
 from typing import TYPE_CHECKING

@@ -22,6 +22,3 @@ class BillingAddressUpdate(BaseModel):
 class BillingAddressResponse(BillingAddressCreate):
     id: int
     user_id: int
-
-    class Config:
-        orm_mode = True
