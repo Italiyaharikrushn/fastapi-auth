@@ -19,23 +19,21 @@ class CRUDCart:
         return cart
 
     def update_cart_item(self, db: Session, user_id: int, cart_item_id: int, update_data: CartItemUpdate):
-            cart_item = db.query(CartItem).filter(
-                CartItem.id == cart_item_id, CartItem.cart.has(user_id=user_id)
-            ).first()
-            
-            if not cart_item:
-                raise HTTPException(status_code=404, detail="Cart item not found")
+        cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart_id == Cart.id, Cart.user_id == user_id).first()
+        
+        if not cart_item:
+            raise HTTPException(status_code=404, detail="Cart item not found")
 
-            if update_data.quantity <= 0:
-                raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
-            
-            cart_item.quantity = update_data.quantity
-            db.commit()
-            db.refresh(cart_item)
-            return cart_item
+        if update_data.quantity <= 0:
+            raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
+        
+        cart_item.quantity = update_data.quantity
+        db.commit()
+        db.refresh(cart_item)
+        return cart_item
 
     def remove_from_cart(self, db: Session, user_id: int, cart_item_id: int):
-        cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart.has(user_id=user_id)).first()
+        cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.cart_id == Cart.id, Cart.user_id == user_id).first()
         if not cart_item:
             raise HTTPException(status_code=404, detail="Cart item not found")
         

@@ -2,35 +2,26 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Nume
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from db.base_class import Base
-import enum
 from typing import TYPE_CHECKING
+from enum import Enum as PyEnum
 
 if TYPE_CHECKING:
-    from .address import BillingAddress  # Prevents circular import
-
-class OrderStatusEnum(str, enum.Enum):
+    from .address import BillingAddress
+class OrderStatusEnum(str, PyEnum):
     pending = "pending"
     ready_to_ship = "ready_to_ship"
     shipped = "shipped"
     delivered = "delivered"
     completed = "completed"
     cancelled = "cancelled"
-    return_order = "return"
+    return_order = "return_order"
 
 class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     billing_address_id = Column(Integer, ForeignKey("billing_addresses.id"), nullable=False)
-    status = Column(Enum(OrderStatusEnum), nullable=False, default=OrderStatusEnum.pending)
     total_price = Column(Numeric(10, 2), nullable=False, default=0.00)
+    status = Column(Enum(OrderStatusEnum), nullable=False, default=OrderStatusEnum.pending)
     created_at = Column(DateTime, default=datetime.utcnow)
-
-    # Relationships
-    user = relationship("User", back_populates="orders")
-    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
-    billing_address = relationship("BillingAddress", back_populates="orders", foreign_keys=[billing_address_id])
-
-    def calculate_total_price(self):
-        self.total_price = sum(item.total_price() for item in self.order_items)

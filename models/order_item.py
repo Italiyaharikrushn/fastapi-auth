@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date
-from sqlalchemy.orm import relationship
-from datetime import date, datetime
+from sqlalchemy import Column, Integer, ForeignKey, Enum, Date
+from datetime import date
 from db.base_class import Base
 import enum
 
@@ -24,10 +23,6 @@ class OrderItem(Base):
     order_date = Column(Date, default=date.today)
     dispatch_date = Column(Date, nullable=True)
     delivery_date = Column(Date, nullable=True)
-
-    # Relationships
-    order = relationship("Order", back_populates="order_items")
-    product = relationship("Product", back_populates="order_items")
 
     def total_price(self):
         return self.quantity * self.product.price
