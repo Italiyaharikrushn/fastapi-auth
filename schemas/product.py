@@ -20,3 +20,4 @@ class ProductResponse(BaseModel):
     price: float
     stock: int
     seller_id: int
+    
