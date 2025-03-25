@@ -4,6 +4,7 @@ from schemas.product import ProductCreate, ProductUpdate, ProductResponse
 import crud
 from db.session import get_db
 from api.dependencies import get_current_user # Middleware for authentication
+from models import Product
 
 router = APIRouter()
 
@@ -11,12 +12,22 @@ router = APIRouter()
 def create_product(
     product: ProductCreate, 
     db: Session = Depends(get_db), 
-    user = Depends(get_current_user)
+    user: dict = Depends(get_current_user)
 ):
-    new_product = crud.product.create(db, obj_in=product, created_by=user)
-
-    if not new_product:
+    if user.role != "seller":
         raise HTTPException(status_code=403, detail="Only sellers can create products")
+
+    new_product = Product(
+        title=product.title,
+        description=product.description,
+        price=product.price,
+        stock=product.stock,
+        image=product.image,
+        seller_id=user.id
+    )
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
     
     return new_product
 
@@ -27,25 +38,66 @@ def update_product(
     db: Session = Depends(get_db), 
     user: dict = Depends(get_current_user)
 ):
-    updated_product = crud.product.update(db, product_id, updated_data.dict(), user)
-    if not updated_product:
+    product = db.query(Product).filter(Product.id == product_id, Product.seller_id == user.id).first()
+    
+    if not product:
         raise HTTPException(status_code=403, detail="Not authorized to update this product")
-    return updated_product
+
+    for key, value in updated_data.dict().items():
+        setattr(product, key, value)
+
+    db.commit()
+    db.refresh(product)
+    return product
 
 @router.get("/", response_model=list[ProductResponse])
-def get_products(db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
-    return crud.product.get_all_products(db, user)
+def get_products(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user.role == "seller":
+        products = db.query(Product).filter(Product.seller_id == current_user.id).all()
+    else:
+        products = db.query(Product).all()
+
+    product_list = [
+        {
+            "id": p.id,
+            "title": p.title,
+            "description": p.description,
+            "price": p.price,
+            "stock": p.stock,
+            "seller_id": p.seller_id,
+            "image_url": p.image,
+        }
+        for p in products
+    ]
+
+    return product_list
 
 @router.get("/{product_id}", response_model=ProductResponse)
-def get_product(product_id: int, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
-    product = crud.product.get_by_id(db, product_id, user)
+def get_product(
+    product_id: int, 
+    db: Session = Depends(get_db)
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found or not authorized to view")
+        raise HTTPException(status_code=404, detail="Product not found")
+
     return product
 
 @router.delete("/{product_id}")
-def delete_product(product_id: int, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
-    deleted_product = crud.product.remove(db, product_id, user)
-    if not deleted_product:
+def delete_product(
+    product_id: int, 
+    db: Session = Depends(get_db), 
+    user: dict = Depends(get_current_user)
+):
+    product = db.query(Product).filter(Product.id == product_id, Product.seller_id == user.id).first()
+
+    if not product:
         raise HTTPException(status_code=403, detail="Not authorized to delete this product")
+
+    db.delete(product)
+    db.commit()
     return {"message": "Product deleted successfully"}
